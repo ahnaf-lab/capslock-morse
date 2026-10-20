@@ -48,6 +48,25 @@ encode("SOS")      # -> list of Signal(on, units) steps spelling S-O-S
 encode_status("PASS")  # same, for a well-known status code
 ```
 
+Finally, `capslock_morse.events` adapts real build/test/git events into
+encodable messages. A process exit code becomes a `PASS`/`FAIL` status
+(standard POSIX convention: `0` is success, anything else is a failure), and
+a git commit's subject line is read and trimmed down to its first few words
+before being handed to the encoder:
+
+```python
+from capslock_morse.events import encode_exit_code, encode_commit_subject
+
+encode_exit_code(0)              # -> same signals as encode_status("PASS")
+encode_exit_code(1)              # -> same signals as encode_status("FAIL")
+encode_commit_subject(".")       # -> first 3 words of the last commit here, encoded
+```
+
+`read_commit_subject` shells out to `git log` with a fixed argument list (no
+shell involved) and validates any ref it is given against a strict
+allow-list before passing it along, so it is safe to call even with an
+untrusted ref string.
+
 Run the test suite with:
 
 ```
