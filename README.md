@@ -67,6 +67,33 @@ shell involved) and validates any ref it is given against a strict
 allow-list before passing it along, so it is safe to call even with an
 untrusted ref string.
 
+`capslock_morse.scheduler` is the daemon loop itself: `play()` drives an
+`LED` through a list of `Signal` steps, holding each on/off state for
+`units * unit_seconds` real seconds, and `BlinkScheduler` wraps that in a
+small queue-based loop so a running daemon can keep submitting new events
+(exit codes, commit subjects) and have them blinked out in order:
+
+```python
+from capslock_morse.events import encode_exit_code
+from capslock_morse.led import LED
+from capslock_morse.scheduler import BlinkScheduler
+
+led = LED("/sys/class/leds/input0::capslock/brightness")
+scheduler = BlinkScheduler(led, unit_seconds=0.1)
+scheduler.submit(encode_exit_code(0))
+scheduler.stop()
+scheduler.run_forever()  # blinks PASS, then returns
+```
+
+A ready-to-run command line wraps this for the two event kinds the daemon
+cares about:
+
+```
+python3 -m capslock_morse exit-code 0
+python3 -m capslock_morse commit --repo . --max-words 3
+python3 -m capslock_morse --led /sys/class/leds/input1::numlock/brightness --unit-seconds 0.08 exit-code 1
+```
+
 Run the test suite with:
 
 ```

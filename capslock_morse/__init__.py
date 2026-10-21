@@ -7,6 +7,7 @@ from .events import (
 )
 from .led import LED
 from .morse import MORSE_TABLE, STATUS_CODES, Signal, encode, encode_char, encode_status
+from .scheduler import DEFAULT_UNIT_SECONDS, BlinkScheduler, play
 
 __all__ = [
     "LED",
@@ -21,4 +22,7 @@ __all__ = [
     "exit_code_to_status",
     "read_commit_subject",
     "summarize_commit_subject",
+    "BlinkScheduler",
+    "DEFAULT_UNIT_SECONDS",
+    "play",
 ]
