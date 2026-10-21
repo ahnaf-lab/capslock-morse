@@ -94,6 +94,14 @@ python3 -m capslock_morse commit --repo . --max-words 3
 python3 -m capslock_morse --led /sys/class/leds/input1::numlock/brightness --unit-seconds 0.08 exit-code 1
 ```
 
+`tests/test_fake_hardware.py` exercises the whole pipeline end to end: a
+fixed event (an exit code or a commit from a throwaway git repo) goes
+through the real event adapter, encoder, and `BlinkScheduler`, landing on a
+real throwaway LED brightness file. A virtual clock stands in for
+`time.sleep`, so the test can assert the exact sequence of (timestamp,
+on/off) writes the LED file receives -- including one fully hand-computed
+timeline -- without waiting out any real delay.
+
 Run the test suite with:
 
 ```
